@@ -31,9 +31,15 @@ void* workerThreadStart(void* threadArgs) {
 
     WorkerArgs* args = static_cast<WorkerArgs*>(threadArgs);
 
-    // TODO: Implement worker thread here.
+    // Implement worker thread here.
 
     printf("Hello world from thread %d\n", args->threadId);
+
+    unsigned int start_row = args->threadId * args->height/2; // signed * unsigned = unsigned 
+    // printf("starting row is %d\n", start_row);
+    mandelbrotSerial(args->x0, args->y0, args->x1, args->y1, args->width, args->height, start_row, args->height/2, args->maxIterations, args->output);
+
+    printf("done thread %d\n", args->threadId);
 
     return NULL;
 }
@@ -61,8 +67,14 @@ void mandelbrotThread(
     WorkerArgs args[MAX_THREADS];
 
     for (int i=0; i<numThreads; i++) {
-        // TODO: Set thread arguments here.
+        // Set thread arguments here.
+        args[i].x0 = x0, args[i].x1 = x1, args[i].y0 = y0, args[i].y1 = y1;
+        args[i].width = width;
+        args[i].height = height;
+        args[i].maxIterations = maxIterations;
+        args[i].output = output;
         args[i].threadId = i;
+        args[i].numThreads = numThreads;
     }
 
     // Fire up the worker threads.  Note that numThreads-1 pthreads
